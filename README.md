@@ -23,40 +23,61 @@ A modern, scalable URL shortening service with comprehensive analytics tracking,
 ## 📋 Quick Start
 
 ### Prerequisites
-- Go 1.21+
-- AWS Account (DynamoDB)
-- Redis instance
-- Docker (optional)
+- **Docker Desktop** (Windows/Mac/Linux)
+- **AWS Account** (DynamoDB)
+- Go 1.21+ (optional, if not using Docker)
 
-### Installation
+### Windows Users (No Go/Make Required!)
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/AbubakarMahmood1/Serverless-URL-Analytics-Platform.git
-   cd Serverless-URL-Analytics-Platform
-   ```
+See **[WINDOWS.md](WINDOWS.md)** for detailed Windows setup with Docker.
 
-2. **Install dependencies**
-   ```bash
-   go mod download
-   go mod tidy
-   ```
+**Quick start:**
+```powershell
+# 1. Configure environment
+copy .env.example .env
+# Edit .env with AWS credentials
 
-3. **Configure environment**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your AWS and Redis credentials
-   ```
+# 2. Start with PowerShell (recommended)
+.\dev.ps1 start
 
-4. **Set up DynamoDB tables**
-   See [SETUP.md](SETUP.md) for detailed AWS DynamoDB setup instructions
+# Or use batch files
+.\build.bat
+.\run.bat
+```
 
-5. **Run the server**
-   ```bash
-   make run
-   # or
-   go run cmd/server/main.go
-   ```
+### Linux/Mac Users
+
+#### With Docker (Recommended)
+```bash
+# 1. Configure environment
+cp .env.example .env
+# Edit .env with AWS credentials
+
+# 2. Start services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+
+#### Without Docker (Native Go)
+```bash
+# 1. Install dependencies
+go mod download
+go mod tidy
+
+# 2. Configure environment
+cp .env.example .env
+# Edit .env
+
+# 3. Run Redis locally
+docker run -d -p 6379:6379 redis:alpine
+# or: brew install redis && redis-server
+
+# 4. Run the server
+make run
+# or: go run cmd/server/main.go
+```
 
 The API will be available at `http://localhost:8080`
 
@@ -97,6 +118,8 @@ DELETE /api/links/:shortCode # Delete link
 
 ## 📖 Documentation
 
+- **[WINDOWS.md](WINDOWS.md)** - Windows setup guide (Docker-based, no Go required)
+- **[TESTING.md](TESTING.md)** - Comprehensive testing guide with automated tests
 - **[CLAUDE.md](CLAUDE.md)** - Complete implementation guide and architecture
 - **[SETUP.md](SETUP.md)** - Detailed setup and deployment instructions
 
@@ -139,20 +162,53 @@ docker build -t url-shortener .
 docker run -p 8080:8080 --env-file .env url-shortener
 ```
 
-## 🧪 Development
+## 🧪 Testing
+
+### Automated Tests (Windows - No Go Required!)
+
+```powershell
+# Run comprehensive API tests
+.\test.bat
+
+# Or use PowerShell directly
+.\test-api.ps1
+
+# Run unit tests in Docker
+.\run-tests.bat
+
+# Via dev menu
+.\dev.ps1
+# Select option 9: Test API
+```
+
+**Tests Include:**
+- ✓ Health checks
+- ✓ URL shortening (random & custom)
+- ✓ URL validation
+- ✓ Redirects
+- ✓ Analytics tracking
+- ✓ QR code generation
+- ✓ Rate limiting
+- ✓ CORS headers
+
+**Test Output:**
+- Green ✓ = Passed
+- Red ✗ = Failed
+- Results saved to `test-results.csv`
+
+See **[TESTING.md](TESTING.md)** for complete testing guide.
+
+### Development
 
 ```bash
-# Run tests
+# With Docker
+docker-compose up -d
+docker-compose logs -f
+
+# Native Go (Linux/Mac)
 make test
-
-# Build binary
 make build
-
-# Format code
 go fmt ./...
-
-# Run with hot reload (requires air)
-make dev
 ```
 
 ## 🎯 Roadmap
@@ -161,13 +217,15 @@ make dev
 - [x] Analytics tracking
 - [x] QR code generation
 - [x] Rate limiting
+- [x] Docker-based development (Windows compatible)
+- [x] Comprehensive automated tests
+- [x] Unit tests & integration tests
 - [ ] User authentication (JWT)
 - [ ] API key management
 - [ ] Next.js analytics dashboard
 - [ ] GeoIP integration
 - [ ] Custom domains
 - [ ] Link expiration
-- [ ] Comprehensive test coverage
 
 ## 📄 License
 
