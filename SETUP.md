@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- **Go** 1.21 or higher
+- **Go** 1.23 or higher
 - **AWS Account** with DynamoDB access
 - **Redis** instance (local or cloud)
 - **Docker** (optional, for containerized deployment)
