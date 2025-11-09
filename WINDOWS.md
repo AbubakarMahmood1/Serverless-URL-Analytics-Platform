@@ -251,7 +251,24 @@ KEYS *
 
 ### Port Already in Use
 
-If port 8080 or 6379 is already in use:
+If port 8080 is already in use, you'll see:
+```
+Error: ports are not available: ... bind: Only one usage of each socket address ... is normally permitted.
+```
+
+**Quick Fix - Kill the process using port 8080:**
+
+```powershell
+# PowerShell (Recommended)
+.\kill-port-8080.ps1
+
+# Or using Command Prompt
+.\kill-port-8080.bat
+```
+
+These scripts will find and safely kill whatever process is using port 8080.
+
+**Alternative - Use a different port:**
 
 1. Edit `docker-compose.yml`
 2. Change the port mapping:
