@@ -24,8 +24,10 @@ A modern, scalable URL shortening service with comprehensive analytics tracking,
 
 ### Prerequisites
 - **Docker Desktop** (Windows/Mac/Linux)
-- **AWS Account** (DynamoDB)
+- **AWS Account** (Optional - can test locally without AWS!)
 - Go 1.21+ (optional, if not using Docker)
+
+> **💡 No AWS? No Problem!** See [LOCAL-TESTING.md](LOCAL-TESTING.md) to test without an AWS account using DynamoDB Local.
 
 ### Windows Users (No Go/Make Required!)
 
@@ -118,6 +120,7 @@ DELETE /api/links/:shortCode # Delete link
 
 ## 📖 Documentation
 
+- **[LOCAL-TESTING.md](LOCAL-TESTING.md)** - **Test without AWS!** (DynamoDB Local setup)
 - **[WINDOWS.md](WINDOWS.md)** - Windows setup guide (Docker-based, no Go required)
 - **[TESTING.md](TESTING.md)** - Comprehensive testing guide with automated tests
 - **[CLAUDE.md](CLAUDE.md)** - Complete implementation guide and architecture

@@ -13,6 +13,7 @@ import (
 	"github.com/AbubakarMahmood1/Serverless-URL-Analytics-Platform/internal/repository/dynamodb"
 	"github.com/AbubakarMahmood1/Serverless-URL-Analytics-Platform/internal/repository/redis"
 	"github.com/AbubakarMahmood1/Serverless-URL-Analytics-Platform/internal/service"
+	dynamodb_sdk "github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -21,7 +22,17 @@ func main() {
 	cfg := config.Load()
 
 	// Initialize DynamoDB client
-	dynamoClient, err := dynamodb.NewClient(cfg)
+	var dynamoClient *dynamodb_sdk.Client
+	var err error
+
+	if cfg.UseLocalDynamoDB {
+		log.Printf("Using Local DynamoDB at %s", cfg.DynamoDBLocalEndpoint)
+		dynamoClient, err = dynamodb.NewLocalClient(cfg.DynamoDBLocalEndpoint)
+	} else {
+		log.Printf("Using AWS DynamoDB in region %s", cfg.AWSRegion)
+		dynamoClient, err = dynamodb.NewClient(cfg)
+	}
+
 	if err != nil {
 		log.Fatalf("Failed to create DynamoDB client: %v", err)
 	}

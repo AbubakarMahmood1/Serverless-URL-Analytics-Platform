@@ -14,11 +14,13 @@ type Config struct {
 	Env  string
 
 	// DynamoDB
-	AWSRegion            string
-	AWSAccessKeyID       string
-	AWSSecretAccessKey   string
-	DynamoDBURLsTable    string
-	DynamoDBAnalyticsTable string
+	UseLocalDynamoDB        bool
+	DynamoDBLocalEndpoint   string
+	AWSRegion               string
+	AWSAccessKeyID          string
+	AWSSecretAccessKey      string
+	DynamoDBURLsTable       string
+	DynamoDBAnalyticsTable  string
 
 	// Redis
 	RedisURL      string
@@ -49,15 +51,19 @@ func Load() *Config {
 	rateLimitRequests, _ := strconv.Atoi(getEnv("RATE_LIMIT_REQUESTS", "100"))
 	rateLimitWindow, _ := strconv.Atoi(getEnv("RATE_LIMIT_WINDOW", "60"))
 
+	useLocal := getEnv("USE_LOCAL_DYNAMODB", "true") == "true"
+
 	AppConfig = &Config{
 		// Server
 		Port: getEnv("PORT", "8080"),
 		Env:  getEnv("ENV", "development"),
 
 		// DynamoDB
+		UseLocalDynamoDB:       useLocal,
+		DynamoDBLocalEndpoint:  getEnv("DYNAMODB_LOCAL_ENDPOINT", "http://localhost:8000"),
 		AWSRegion:              getEnv("AWS_REGION", "us-east-1"),
-		AWSAccessKeyID:         getEnv("AWS_ACCESS_KEY_ID", ""),
-		AWSSecretAccessKey:     getEnv("AWS_SECRET_ACCESS_KEY", ""),
+		AWSAccessKeyID:         getEnv("AWS_ACCESS_KEY_ID", "dummy"),
+		AWSSecretAccessKey:     getEnv("AWS_SECRET_ACCESS_KEY", "dummy"),
 		DynamoDBURLsTable:      getEnv("DYNAMODB_URLS_TABLE", "urls"),
 		DynamoDBAnalyticsTable: getEnv("DYNAMODB_ANALYTICS_TABLE", "analytics"),
 
