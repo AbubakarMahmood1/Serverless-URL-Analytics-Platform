@@ -1,0 +1,36 @@
+# Makefile for building Go Lambda function
+
+.PHONY: build clean deploy package
+
+# Build the Lambda function
+build:
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -tags lambda.norpc -o bootstrap cmd/lambda/main.go
+	zip lambda.zip bootstrap
+
+# Clean build artifacts
+clean:
+	rm -f bootstrap lambda.zip
+
+# Package for SAM
+package:
+	sam package \
+		--template-file template.yaml \
+		--output-template-file packaged.yaml \
+		--s3-bucket your-deployment-bucket
+
+# Deploy with SAM
+deploy:
+	sam deploy \
+		--template-file packaged.yaml \
+		--stack-name url-shortener \
+		--capabilities CAPABILITY_IAM \
+		--parameter-overrides \
+			Environment=production \
+			RedisEndpoint=your-redis-endpoint
+
+# Build and deploy
+all: build deploy
+
+# Local testing with SAM
+local:
+	sam local start-api

@@ -121,6 +121,9 @@ DELETE /api/links/:shortCode # Delete link
 ## 📖 Documentation
 
 - **[LOCAL-TESTING.md](LOCAL-TESTING.md)** - **Test without AWS!** (DynamoDB Local setup)
+- **[AWS-LAMBDA-GUIDE.md](AWS-LAMBDA-GUIDE.md)** - **Deploy to AWS Lambda** (serverless, ~FREE!)
+- **[DEPLOYMENT-OPTIONS.md](DEPLOYMENT-OPTIONS.md)** - Compare all deployment options
+- **[DATABASE-COMPARISON.md](DATABASE-COMPARISON.md)** - Understanding databases
 - **[WINDOWS.md](WINDOWS.md)** - Windows setup guide (Docker-based, no Go required)
 - **[TESTING.md](TESTING.md)** - Comprehensive testing guide with automated tests
 - **[CLAUDE.md](CLAUDE.md)** - Complete implementation guide and architecture
@@ -146,6 +149,15 @@ DELETE /api/links/:shortCode # Delete link
 
 ## 🚢 Deployment
 
+### AWS Lambda (Serverless - Recommended!) 🆕
+```powershell
+# Deploy to AWS Lambda (~FREE for most traffic!)
+.\deploy-lambda.ps1
+
+# Cost: $0/month for up to 1M requests!
+```
+See **[AWS-LAMBDA-GUIDE.md](AWS-LAMBDA-GUIDE.md)** for complete guide.
+
 ### Railway
 ```bash
 railway login
@@ -159,11 +171,13 @@ fly launch
 fly deploy
 ```
 
-### Docker
+### Docker (Any VPS)
 ```bash
 docker build -t url-shortener .
 docker run -p 8080:8080 --env-file .env url-shortener
 ```
+
+**Compare all options:** [DEPLOYMENT-OPTIONS.md](DEPLOYMENT-OPTIONS.md)
 
 ## 🧪 Testing
 
@@ -223,6 +237,9 @@ go fmt ./...
 - [x] Docker-based development (Windows compatible)
 - [x] Comprehensive automated tests
 - [x] Unit tests & integration tests
+- [x] **AWS Lambda deployment** (serverless!)
+- [x] Local testing without AWS (DynamoDB Local)
+- [x] Multiple deployment options
 - [ ] User authentication (JWT)
 - [ ] API key management
 - [ ] Next.js analytics dashboard

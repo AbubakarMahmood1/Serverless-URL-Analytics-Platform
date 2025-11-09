@@ -1,0 +1,167 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: URL Shortener - Serverless Application
+
+Parameters:
+  Environment:
+    Type: String
+    Default: production
+    AllowedValues:
+      - development
+      - staging
+      - production
+    Description: Deployment environment
+
+  DynamoDBURLsTable:
+    Type: String
+    Default: urls
+    Description: DynamoDB table name for URLs
+
+  DynamoDBAnalyticsTable:
+    Type: String
+    Default: analytics
+    Description: DynamoDB table name for analytics
+
+  RedisEndpoint:
+    Type: String
+    Description: Redis endpoint (ElastiCache or Upstash)
+    Default: ""
+
+  RedisPassword:
+    Type: String
+    Description: Redis password (optional)
+    Default: ""
+    NoEcho: true
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: provided.al2
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        ENV: !Ref Environment
+        DYNAMODB_URLS_TABLE: !Ref DynamoDBURLsTable
+        DYNAMODB_ANALYTICS_TABLE: !Ref DynamoDBAnalyticsTable
+        USE_LOCAL_DYNAMODB: "false"
+        REDIS_URL: !Ref RedisEndpoint
+        REDIS_PASSWORD: !Ref RedisPassword
+        SHORT_CODE_LENGTH: "6"
+        RATE_LIMIT_REQUESTS: "100"
+        RATE_LIMIT_WINDOW: "60"
+
+Resources:
+  # Lambda Function
+  URLShortenerFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: ./
+      Handler: bootstrap
+      Events:
+        # API Gateway HTTP API (cheaper than REST API)
+        HttpApi:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+        HttpApiRoot:
+          Type: HttpApi
+          Properties:
+            Path: /
+            Method: ANY
+      Policies:
+        # DynamoDB permissions
+        - DynamoDBCrudPolicy:
+            TableName: !Ref URLsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AnalyticsTable
+      Environment:
+        Variables:
+          BASE_URL: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+
+  # DynamoDB Tables
+  URLsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref DynamoDBURLsTable
+      BillingMode: PAY_PER_REQUEST  # On-demand pricing
+      AttributeDefinitions:
+        - AttributeName: short_code
+          AttributeType: S
+        - AttributeName: created_by
+          AttributeType: S
+        - AttributeName: created_at
+          AttributeType: N
+      KeySchema:
+        - AttributeName: short_code
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: created_by-index
+          KeySchema:
+            - AttributeName: created_by
+              KeyType: HASH
+            - AttributeName: created_at
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Application
+          Value: URLShortener
+        - Key: Environment
+          Value: !Ref Environment
+
+  AnalyticsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Ref DynamoDBAnalyticsTable
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: short_code
+          AttributeType: S
+        - AttributeName: sort_key
+          AttributeType: S
+      KeySchema:
+        - AttributeName: short_code
+          KeyType: HASH
+        - AttributeName: sort_key
+          KeyType: RANGE
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+      Tags:
+        - Key: Application
+          Value: URLShortener
+        - Key: Environment
+          Value: !Ref Environment
+
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiUrl"
+
+  URLShortenerFunctionArn:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt URLShortenerFunction.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-FunctionArn"
+
+  URLsTableName:
+    Description: "DynamoDB URLs Table Name"
+    Value: !Ref URLsTable
+    Export:
+      Name: !Sub "${AWS::StackName}-URLsTable"
+
+  AnalyticsTableName:
+    Description: "DynamoDB Analytics Table Name"
+    Value: !Ref AnalyticsTable
+    Export:
+      Name: !Sub "${AWS::StackName}-AnalyticsTable"
