@@ -30,7 +30,7 @@ This uses Docker to run `go mod tidy` and create the `go.sum` file.
 ### Option 2: Manual Docker Command
 
 ```powershell
-docker run --rm -v ${PWD}:/app -w /app golang:1.21-alpine go mod tidy
+docker run --rm -v ${PWD}:/app -w /app golang:1.23-alpine go mod tidy
 ```
 
 ### Option 3: Updated run.bat (Already Done!)

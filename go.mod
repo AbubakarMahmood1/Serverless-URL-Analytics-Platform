@@ -1,6 +1,6 @@
 module github.com/AbubakarMahmood1/Serverless-URL-Analytics-Platform
 
-go 1.21
+go 1.23
 
 require (
 	github.com/gofiber/fiber/v2 v2.52.9

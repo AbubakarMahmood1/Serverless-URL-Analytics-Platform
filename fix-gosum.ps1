@@ -9,7 +9,7 @@ Write-Host "This will download dependencies and create go.sum..." -ForegroundCol
 Write-Host ""
 
 # Use Go Docker image to run go mod tidy
-docker run --rm -v "${PWD}:/app" -w /app golang:1.21-alpine go mod tidy
+docker run --rm -v "${PWD}:/app" -w /app golang:1.23-alpine go mod tidy
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host ""

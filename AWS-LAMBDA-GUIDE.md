@@ -43,7 +43,7 @@ Deploy your URL Shortener as a **serverless application** on AWS Lambda with nea
 
 1. **Go** (for building)
    - Download: https://golang.org/dl/
-   - Version: 1.21+
+   - Version: 1.23+
 
 2. **AWS CLI**
    - Download: https://aws.amazon.com/cli/

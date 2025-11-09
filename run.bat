@@ -23,7 +23,7 @@ if not exist go.sum (
     echo INFO: Generating go.sum file...
     echo This only needs to happen once.
     echo.
-    docker run --rm -v "%cd%":/app -w /app golang:1.21-alpine go mod tidy
+    docker run --rm -v "%cd%":/app -w /app golang:1.23-alpine go mod tidy
     if %ERRORLEVEL% EQU 0 (
         echo OK go.sum created successfully
         echo.
