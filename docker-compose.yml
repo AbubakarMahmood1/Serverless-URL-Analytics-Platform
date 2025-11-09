@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # DynamoDB Local - No AWS account needed!
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    container_name: url-shortener-dynamodb
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /data"
+    volumes:
+      - dynamodb-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Redis service for caching and rate limiting
+  redis:
+    image: redis:7-alpine
+    container_name: url-shortener-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # URL Shortener API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: url-shortener-api
+    ports:
+      - "8080:8080"
+    environment:
+      # Server
+      - PORT=8080
+      - ENV=development
+
+      # DynamoDB Configuration
+      # Set USE_LOCAL_DYNAMODB=true to use local DynamoDB (no AWS account needed)
+      # Set USE_LOCAL_DYNAMODB=false to use AWS DynamoDB
+      - USE_LOCAL_DYNAMODB=${USE_LOCAL_DYNAMODB:-true}
+      - DYNAMODB_LOCAL_ENDPOINT=${DYNAMODB_LOCAL_ENDPOINT:-http://dynamodb-local:8000}
+
+      # AWS DynamoDB (only needed if USE_LOCAL_DYNAMODB=false)
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-dummy}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-dummy}
+      - DYNAMODB_URLS_TABLE=${DYNAMODB_URLS_TABLE:-urls}
+      - DYNAMODB_ANALYTICS_TABLE=${DYNAMODB_ANALYTICS_TABLE:-analytics}
+
+      # Redis
+      - REDIS_URL=redis:6379
+      - REDIS_PASSWORD=
+      - REDIS_DB=0
+
+      # Application
+      - BASE_URL=${BASE_URL:-http://localhost:8080}
+      - SHORT_CODE_LENGTH=6
+      - RATE_LIMIT_REQUESTS=100
+      - RATE_LIMIT_WINDOW=60
+    depends_on:
+      dynamodb-local:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  dynamodb-data:
+    driver: local
+  redis-data:
+    driver: local
