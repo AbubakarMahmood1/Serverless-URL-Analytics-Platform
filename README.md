@@ -37,7 +37,7 @@ See **[WINDOWS.md](WINDOWS.md)** for detailed Windows setup with Docker.
 ```powershell
 # 1. Configure environment
 copy .env.example .env
-# Edit .env with AWS credentials
+# Edit .env - set API_PORT if 8080 is in use (e.g., API_PORT=3000)
 
 # 2. Start with PowerShell (recommended)
 .\dev.ps1 start
@@ -46,6 +46,8 @@ copy .env.example .env
 .\build.bat
 .\run.bat
 ```
+
+> **⚠️ Port 8080 already in use?** Edit `.env` and set `API_PORT=3000` (or any available port)
 
 ### Linux/Mac Users
 

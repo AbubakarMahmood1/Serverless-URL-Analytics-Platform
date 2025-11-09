@@ -256,26 +256,39 @@ If port 8080 is already in use, you'll see:
 Error: ports are not available: ... bind: Only one usage of each socket address ... is normally permitted.
 ```
 
-**Quick Fix - Kill the process using port 8080:**
+**Solution - Use a different port:**
 
-```powershell
-# PowerShell (Recommended)
-.\kill-port-8080.ps1
-
-# Or using Command Prompt
-.\kill-port-8080.bat
-```
-
-These scripts will find and safely kill whatever process is using port 8080.
-
-**Alternative - Use a different port:**
-
-1. Edit `docker-compose.yml`
-2. Change the port mapping:
-   ```yaml
-   ports:
-     - "9090:8080"  # Use port 9090 instead
+1. Create or edit your `.env` file:
+   ```powershell
+   copy .env.example .env
+   notepad .env
    ```
+
+2. Change the `API_PORT` to an available port:
+   ```env
+   # Use port 3000 instead of 8080
+   API_PORT=3000
+   ```
+
+3. Restart the services:
+   ```powershell
+   docker-compose down
+   .\run.bat
+   ```
+
+4. Access the API at the new port:
+   ```
+   http://localhost:3000
+   ```
+
+**To find what's using port 8080 (optional):**
+```powershell
+# PowerShell
+Get-NetTCPConnection -LocalPort 8080 -State Listen
+
+# Command Prompt
+netstat -ano | findstr :8080
+```
 
 ### Docker Not Starting
 
