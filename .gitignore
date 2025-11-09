@@ -46,3 +46,6 @@ frontend/dist/
 frontend/.env.local
 frontend/.env.production.local
 frontend/.env.development.local
+
+# Test results
+test-results.csv

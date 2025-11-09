@@ -1,0 +1,19 @@
+# Dockerfile for running tests
+FROM golang:1.21-alpine
+
+WORKDIR /app
+
+# Install dependencies
+RUN apk add --no-cache git
+
+# Copy go mod files
+COPY go.mod go.sum ./
+
+# Download dependencies
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Run tests
+CMD ["go", "test", "-v", "./..."]
