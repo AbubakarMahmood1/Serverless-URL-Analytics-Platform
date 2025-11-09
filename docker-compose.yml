@@ -10,11 +10,8 @@ services:
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /data"
     volumes:
       - dynamodb-data:/data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
+    networks:
+      - app-network
 
   # Redis service for caching and rate limiting
   redis:
@@ -24,11 +21,14 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    networks:
+      - app-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 5
+      start_period: 5s
 
   # URL Shortener API
   api:
@@ -66,11 +66,14 @@ services:
       - SHORT_CODE_LENGTH=6
       - RATE_LIMIT_REQUESTS=100
       - RATE_LIMIT_WINDOW=60
+    networks:
+      - app-network
     depends_on:
       dynamodb-local:
-        condition: service_healthy
+        condition: service_started
       redis:
         condition: service_healthy
+    entrypoint: ["/bin/sh", "-c", "sleep 5 && /app/server"]
     restart: unless-stopped
 
 volumes:
@@ -78,3 +81,7 @@ volumes:
     driver: local
   redis-data:
     driver: local
+
+networks:
+  app-network:
+    driver: bridge
