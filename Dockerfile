@@ -7,10 +7,16 @@ WORKDIR /app
 RUN apk add --no-cache git
 
 # Copy go mod files
-COPY go.mod go.sum ./
+COPY go.mod ./
 
-# Download dependencies
+# Copy go.sum if it exists (might not exist on first build)
+COPY go.su[m] ./
+
+# Download dependencies (will generate go.sum if needed)
 RUN go mod download
+
+# Ensure go.sum is created
+RUN go mod tidy
 
 # Copy source code
 COPY . .
