@@ -37,7 +37,7 @@ See **[WINDOWS.md](WINDOWS.md)** for detailed Windows setup with Docker.
 ```powershell
 # 1. Configure environment
 copy .env.example .env
-# Edit .env - set API_PORT if 8080 is in use (e.g., API_PORT=3000)
+# Default port is 3000 - edit .env if you want a different port
 
 # 2. Start with PowerShell (recommended)
 .\dev.ps1 start
@@ -47,7 +47,7 @@ copy .env.example .env
 .\run.bat
 ```
 
-> **⚠️ Port 8080 already in use?** Edit `.env` and set `API_PORT=3000` (or any available port)
+> **💡 Default port:** API runs on **port 3000** by default (configurable via `API_PORT` in `.env`)
 
 ### Linux/Mac Users
 
@@ -83,7 +83,9 @@ make run
 # or: go run cmd/server/main.go
 ```
 
-The API will be available at `http://localhost:8080`
+The API will be available at `http://localhost:8080` (when running natively with Go)
+
+> **Note:** When using Docker, the API runs on port **3000** by default (configurable via `API_PORT` in `.env`)
 
 ## 📚 API Endpoints
 

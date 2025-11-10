@@ -42,9 +42,11 @@ if %ERRORLEVEL% EQU 0 (
     echo Services Started Successfully!
     echo ========================================
     echo.
-    echo API: http://localhost:8080
+    echo API: http://localhost:3000 (default)
     echo DynamoDB Local: http://localhost:8000
     echo Redis: localhost:6379
+    echo.
+    echo NOTE: If you changed API_PORT in .env, use that port instead
     echo.
     echo Next steps:
     echo   1. Create tables: .\setup-local-tables-docker.bat
