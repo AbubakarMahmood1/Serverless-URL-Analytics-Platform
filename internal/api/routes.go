@@ -23,6 +23,9 @@ func SetupRoutes(
 	app.Use(middleware.Logger())
 	app.Use(middleware.CORS())
 
+	// Welcome page with API documentation
+	app.Get("/", healthHandler.Welcome)
+
 	// Health check
 	app.Get("/health", healthHandler.HealthCheck)
 

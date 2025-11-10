@@ -17,7 +17,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 echo Creating 'urls' table...
-docker run --rm --network url-shortener-analytics-platform_default ^
+docker run --rm --network serverlessurlanalyticsplatform_app-network ^
   amazon/aws-cli dynamodb create-table ^
   --table-name urls ^
   --attribute-definitions ^
@@ -41,7 +41,7 @@ if %ERRORLEVEL% EQU 0 (
 
 echo.
 echo Creating 'analytics' table...
-docker run --rm --network url-shortener-analytics-platform_default ^
+docker run --rm --network serverlessurlanalyticsplatform_app-network ^
   amazon/aws-cli dynamodb create-table ^
   --table-name analytics ^
   --attribute-definitions ^
