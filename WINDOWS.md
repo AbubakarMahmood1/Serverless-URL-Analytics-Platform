@@ -15,7 +15,7 @@
 Either clone the repository or download and extract the ZIP file:
 
 ```powershell
-git clone https://github.com/AbubakarMahmood1/Serverless-URL-Analytics-Platform.git
+git clone https://github.com/AbubakarMahmood/Serverless-URL-Analytics-Platform.git
 cd Serverless-URL-Analytics-Platform
 ```
 
